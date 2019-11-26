@@ -2,7 +2,6 @@ package es.iessaladillo.pedrojoya.pr04.data
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.MutableLiveData
 import es.iessaladillo.pedrojoya.pr04.data.entity.Task
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -18,10 +17,13 @@ object LocalRepository : Repository {
     )
 
 
-    private val tasksLiveData: MutableLiveData<List<Task>> = MutableLiveData(tasks)
+    //private val tasksLiveData: MutableLiveData<List<Task>> = MutableLiveData(tasks)
 
 
-    override fun queryAllTasks(): List<Task> = tasksLiveData.value!!
+    override fun queryAllTasks(): List<Task>{
+        return tasks
+
+    }
 
     override fun queryCompletedTasks(): List<Task> {
         var tasksCompleted: MutableList<Task> = mutableListOf()
@@ -48,7 +50,7 @@ object LocalRepository : Repository {
     override fun addTask(concept: String) {
         val dateTime = LocalDateTime.now()
         val formatTime: String = dateTime.format(
-            DateTimeFormatter.ofPattern("M/d/y , H:m:ss")
+            DateTimeFormatter.ofPattern("M/d/y , HH:mm:ss")
         )
         val id: Long
         if (tasks.isEmpty()) {
@@ -56,9 +58,9 @@ object LocalRepository : Repository {
         } else {
             id = (tasks[tasks.size - 1].id) + 1
         }
-        val task = Task(id, concept, formatTime, false, "No completed")
+        val task = Task(id, concept, "Created at: $formatTime", false, "No completed")
         tasks.add(task)
-        tasksLiveData.value = ArrayList<Task>(tasks)
+        //tasksLiveData.value = ArrayList<Task>(tasks)
     }
 
     override fun insertTask(task: Task) {
