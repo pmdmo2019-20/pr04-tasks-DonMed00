@@ -125,7 +125,7 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun checkMenuItem(@MenuRes menuItemId: Int) {
-        lstTasks.post {
+        lstTasks.post  {
             val item = mnuFilter?.subMenu?.findItem(menuItemId)
             item?.let { menuItem ->
                 menuItem.isChecked = true
