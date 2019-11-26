@@ -2,10 +2,8 @@ package es.iessaladillo.pedrojoya.pr04.ui.main
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.graphics.Paint
 import android.os.Build
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.StrikethroughSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import es.iessaladillo.pedrojoya.pr04.R
 import es.iessaladillo.pedrojoya.pr04.data.entity.Task
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.tasks_activity_item.*
+
 import kotlinx.android.synthetic.main.tasks_activity_item.view.*
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+
 
 
 // TODO: Crea una clase TasksActivityAdapter que actúe como adaptador del RecyclerView
@@ -89,27 +86,15 @@ class TasksActivityAdapter() : RecyclerView.Adapter<TasksActivityAdapter.ViewHol
         fun bind(task: Task) {
             task.run {
                 containerView.lblConcept.text = concept
-                containerView.chkCompleted.isChecked = completed
+                containerView.chkCompleted.isChecked=completed
                 if (!completed) {
+                    containerView.lblConcept.paintFlags = 0
                     containerView.lblCompleted.text = createdAt
-                    containerView.viewBar.setBackgroundColor(R.color.colorWhite)
+                    //containerView.viewBar.setBackgroundColor(R.color.colorCompletedTask)
 
-                    // containerView.viewBar.setBackgroundColor(R.color.colorPendingTask)
                 } else {
-                    val dateTime = LocalDateTime.now()
-                    val formatTime: String = dateTime.format(
-                        DateTimeFormatter.ofPattern("M/d/y , HH:mm:ss")
-                    )
-                    val spanBuilder = SpannableStringBuilder(concept)
-                    val strikethroughSpan = StrikethroughSpan()
-                    spanBuilder.setSpan(
-                        strikethroughSpan,  // Span to add
-                        0,  // Start
-                        concept.length-1,  // End of the span (exclusive)
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE // Text changes will not reflect in the strike changing
-                    )
-                    containerView.lblConcept.text = spanBuilder
-                    completedAt = "Completed at :$formatTime"
+                    containerView.lblConcept.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    //containerView.viewBar.setBackgroundColor(R.color.colorCompletedTask)
                     containerView.lblCompleted.text = completedAt
                 }
 

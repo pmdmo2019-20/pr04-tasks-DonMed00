@@ -6,21 +6,20 @@ import es.iessaladillo.pedrojoya.pr04.data.entity.Task
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+
 // TODO: Crea una clase llamada LocalRepository que implemente la interfaz Repository
 //  usando una lista mutable para almacenar las tareas.
 //  Los id de las tareas se irán generando secuencialmente a partir del valor 1 conforme
 //  se van agregando tareas (add).
 
 object LocalRepository : Repository {
-    private var tasks: MutableList<Task> = mutableListOf(
-        Task(1,"Cocinar","Ahora",false,"Aun nada")
-    )
+    private var tasks: MutableList<Task> = mutableListOf()
 
 
     //private val tasksLiveData: MutableLiveData<List<Task>> = MutableLiveData(tasks)
 
 
-    override fun queryAllTasks(): List<Task>{
+    override fun queryAllTasks(): List<Task> {
         return tasks
 
     }
@@ -68,17 +67,21 @@ object LocalRepository : Repository {
     }
 
     override fun deleteTask(taskId: Long) {
+        var position: Int=-1
         tasks.forEach {
             if (it.id == taskId) {
-                tasks.remove(it)
+                position=tasks.indexOf(it)
             }
+        }
+        if(position>-1) {
+            tasks.removeAt(position)
         }
     }
 
     override fun deleteTasks(taskIdList: List<Long>) {
-        tasks.forEach {
-            if (taskIdList.contains(it.id)) {
-                tasks.remove(it)
+        if(taskIdList.isNotEmpty()) {
+            taskIdList.forEach {
+                deleteTask(it)
             }
         }
     }
@@ -92,21 +95,17 @@ object LocalRepository : Repository {
         tasks.forEach {
             if (it.id == taskId) {
                 it.completed = true
-                it.completedAt = formatTime
+                it.completedAt = "Completed at: $formatTime"
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun markTasksAsCompleted(taskIdList: List<Long>) {
-        val dateTime = LocalDateTime.now()
-        val formatTime: String = dateTime.format(
-            DateTimeFormatter.ofPattern("M/d/y , H:m:ss")
-        )
         tasks.forEach {
-            it.completed = true
-            it.completedAt = formatTime
-
+            if (taskIdList.contains(it.id)) {
+                markTaskAsCompleted(it.id)
+            }
         }
     }
 
@@ -120,8 +119,9 @@ object LocalRepository : Repository {
 
     override fun markTasksAsPending(taskIdList: List<Long>) {
         tasks.forEach {
-            it.completed = false
-
+            if (taskIdList.contains(it.id)) {
+                markTaskAsPending(it.id)
+            }
         }
     }
 

@@ -74,25 +74,15 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun addTask() {
-       // lblConcept.hideKeyboard()
-        if(checkTxt()){
+        if(viewModel.isValidConcept(txtConcept.text.toString())){
+            imgAddTask.hideKeyboard()
             viewModel.addTask(txtConcept.text.toString())
         }
         txtConcept.setText("")
-        observeTasks()
 
 
     }
 
-    @SuppressLint("StringFormatInvalid")
-    private fun checkTxt(): Boolean {
-        return if(txtConcept.text.toString().isBlank()){
-            txtConcept.error = getString(R.string.main_invalid_concept)
-            false
-        }else{
-            true
-        }
-    }
 
     private fun setupRecyclerView() {
         lstTasks.run {
@@ -152,8 +142,7 @@ class TasksActivity : AppCompatActivity() {
 
     private fun changeTask(position:Int) {
         val task = listAdapter.getItem(position)
-        task.completed= !task.completed
-        observeTasks()
+        viewModel.updateTaskCompletedState(task,task.completed)
 
 
     }
