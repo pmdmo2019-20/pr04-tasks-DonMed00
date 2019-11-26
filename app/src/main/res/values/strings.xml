@@ -26,4 +26,6 @@
     <string name="tasks_no_tasks_to_mark_as_pending">No tasks to mark as pending</string>
     <string name="main_no_tasks">No tasks to delete</string>
     <string name="main_invalid_concept">Concept can´t be empty</string>
+    <string name="main_task_deleted">%1$s deleted</string>
+    <string name="main_undo">Undo</string>
 </resources>

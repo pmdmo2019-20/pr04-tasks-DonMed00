@@ -50,6 +50,7 @@ dependencies {
 
     // RecyclerView
     implementation "androidx.recyclerview:recyclerview:1.1.0-rc01"
+    implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
 
 
     // Material design

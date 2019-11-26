@@ -1,29 +1,28 @@
 package es.iessaladillo.pedrojoya.pr04.ui.main
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 
 import androidx.activity.viewModels
 import androidx.annotation.MenuRes
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
+import com.google.android.material.snackbar.Snackbar
 import es.iessaladillo.pedrojoya.pr04.R
+import es.iessaladillo.pedrojoya.pr04.base.observeEvent
 import es.iessaladillo.pedrojoya.pr04.data.LocalRepository
 import es.iessaladillo.pedrojoya.pr04.data.entity.Task
 import es.iessaladillo.pedrojoya.pr04.utils.hideKeyboard
 import es.iessaladillo.pedrojoya.pr04.utils.invisibleUnless
+import es.iessaladillo.pedrojoya.pr04.utils.setOnSwipeListener
+import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
+
 import kotlinx.android.synthetic.main.tasks_activity.*
-import kotlinx.android.synthetic.main.tasks_activity_item.*
 
 
 class TasksActivity : AppCompatActivity() {
@@ -33,11 +32,12 @@ class TasksActivity : AppCompatActivity() {
         TasksActivityViewModelFactory(LocalRepository, application)
     }
     private val listAdapter: TasksActivityAdapter = TasksActivityAdapter().also {
-        it.setOnItemClickListener {position ->
+        it.onItemClickListener = { position ->
             changeTask(position)
 
         }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_activity, menu)
@@ -50,9 +50,30 @@ class TasksActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tasks_activity)
         setupViews()
-        observeTasks() }
+        observeViewModelData()
+    }
+
+    private fun observeViewModelData() {
+        observeTasks()
+        observeMessage()
+        observeMenu()
+    }
 
 
+    private fun observeMenu() {
+        viewModel.activityTitle.observe(this) {
+            this.title = it
+        }
+        viewModel.currentFilterMenuItemId.observe(this) {
+            checkMenuItem(it)
+        }
+    }
+
+    private fun observeMessage() {
+        viewModel.onShowMessage.observeEvent(this) {
+            Snackbar.make(lstTasks, it, Snackbar.LENGTH_SHORT).show()
+        }
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -74,7 +95,7 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun addTask() {
-        if(viewModel.isValidConcept(txtConcept.text.toString())){
+        if (viewModel.isValidConcept(txtConcept.text.toString())) {
             imgAddTask.hideKeyboard()
             viewModel.addTask(txtConcept.text.toString())
         }
@@ -83,30 +104,37 @@ class TasksActivity : AppCompatActivity() {
 
     }
 
+    private fun deleteTask(adapterPosition: Int) {
+        var task = listAdapter.getItem(adapterPosition)
+        viewModel.deleteTask(task)
+        Snackbar.make(
+            lstTasks,
+            getString(R.string.main_task_deleted, task.concept),
+            Snackbar.LENGTH_LONG
+        )
+            .setAction(R.string.main_undo) { viewModel.insertTask(task) }
+            .show()
+    }
+
 
     private fun setupRecyclerView() {
         lstTasks.run {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(DividerItemDecoration(context, RecyclerView.VERTICAL))
-            itemAnimator = DefaultItemAnimator()
+            itemAnimator = FlipInTopXAnimator()
             adapter = listAdapter
+
+            setOnSwipeListener { viewHolder, _ ->
+                deleteTask(viewHolder.adapterPosition)
+            }
         }
     }
 
     private fun observeTasks() {
-        viewModel.tasks.observe(this){
-            updateList(it)
+        viewModel.tasks.observe(this) {
+            showTasks(it)
         }
-    }
-    private fun updateList(newList : List<Task>) {
-        listAdapter.submitList(newList)
-        if(newList.isEmpty()){
-            lblEmptyView.invisibleUnless(true)
-        }else{
-            lblEmptyView.invisibleUnless(false)
-        }
-
     }
 
 
@@ -125,7 +153,7 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun checkMenuItem(@MenuRes menuItemId: Int) {
-        lstTasks.post  {
+        lstTasks.post {
             val item = mnuFilter?.subMenu?.findItem(menuItemId)
             item?.let { menuItem ->
                 menuItem.isChecked = true
@@ -140,9 +168,9 @@ class TasksActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeTask(position:Int) {
+    private fun changeTask(position: Int) {
         val task = listAdapter.getItem(position)
-        viewModel.updateTaskCompletedState(task,task.completed)
+        viewModel.updateTaskCompletedState(task, task.completed)
 
 
     }

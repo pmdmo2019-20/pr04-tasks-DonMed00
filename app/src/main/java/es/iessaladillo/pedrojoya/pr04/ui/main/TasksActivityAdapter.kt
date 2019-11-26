@@ -3,6 +3,7 @@ package es.iessaladillo.pedrojoya.pr04.ui.main
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.graphics.Paint
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -12,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import es.iessaladillo.pedrojoya.pr04.R
 import es.iessaladillo.pedrojoya.pr04.data.entity.Task
 import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.tasks_activity_item.*
 
 import kotlinx.android.synthetic.main.tasks_activity_item.view.*
-
 
 
 // TODO: Crea una clase TasksActivityAdapter que actúe como adaptador del RecyclerView
@@ -30,15 +31,12 @@ import kotlinx.android.synthetic.main.tasks_activity_item.view.*
 class TasksActivityAdapter() : RecyclerView.Adapter<TasksActivityAdapter.ViewHolder>() {
 
     private var data: List<Task> = emptyList()
-    private var onItemClickListener : ((Int)->Unit)? = null
+    var onItemClickListener: ((Int) -> Unit)? = null
 
     init {
         setHasStableIds(true)
     }
 
-    fun setOnItemClickListener(listener: ((Int)->Unit)?){
-        onItemClickListener=listener
-    }
 
     override fun getItemId(position: Int): Long {
         return data[position].id
@@ -47,7 +45,7 @@ class TasksActivityAdapter() : RecyclerView.Adapter<TasksActivityAdapter.ViewHol
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val itemView = layoutInflater.inflate(R.layout.tasks_activity_item, parent, false)
-        return ViewHolder(itemView,onItemClickListener)
+        return ViewHolder(itemView)
 
     }
 
@@ -71,41 +69,37 @@ class TasksActivityAdapter() : RecyclerView.Adapter<TasksActivityAdapter.ViewHol
     fun getItem(position: Int): Task = data[position]
 
 
-
-   class ViewHolder(override val containerView: View,onitemClickListener: ((Int)->Unit)?) : RecyclerView.ViewHolder(containerView),
-        LayoutContainer {
+    inner class ViewHolder(override val containerView: View) :
+        RecyclerView.ViewHolder(containerView), LayoutContainer {
 
 
         init {
-            containerView.setOnClickListener { onitemClickListener?.invoke(adapterPosition) }
+            containerView.setOnClickListener { onItemClickListener?.invoke(adapterPosition) }
+            chkCompleted.setOnClickListener { onItemClickListener?.invoke(adapterPosition) }
+
         }
 
 
-        @SuppressLint("ResourceAsColor")
-        @RequiresApi(Build.VERSION_CODES.O)
+        @Suppress("DEPRECATION")
         fun bind(task: Task) {
             task.run {
                 containerView.lblConcept.text = concept
-                containerView.chkCompleted.isChecked=completed
+                containerView.chkCompleted.isChecked = completed
                 if (!completed) {
                     containerView.lblConcept.paintFlags = 0
                     containerView.lblCompleted.text = createdAt
-                    //containerView.viewBar.setBackgroundColor(R.color.colorCompletedTask)
-
+                    containerView.viewBar.run {
+                        background = resources.getDrawable(R.color.colorPendingTask)
+                    }
                 } else {
                     containerView.lblConcept.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-                    //containerView.viewBar.setBackgroundColor(R.color.colorCompletedTask)
-                    containerView.lblCompleted.text = completedAt
+                    containerView.viewBar.run {
+                        background = resources.getDrawable(R.color.colorCompletedTask)
+
+                        containerView.lblCompleted.text = completedAt
+                    }
                 }
-
-
             }
         }
     }
-
-    interface OnitemClickListener{
-        fun onClick(position: Int)
-    }
-
-
 }
