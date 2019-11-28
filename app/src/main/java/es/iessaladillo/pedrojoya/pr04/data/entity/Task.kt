@@ -6,4 +6,4 @@ data class Task(
     val createdAt: String,
     var completed: Boolean,
     var completedAt: String
-) {}
+)

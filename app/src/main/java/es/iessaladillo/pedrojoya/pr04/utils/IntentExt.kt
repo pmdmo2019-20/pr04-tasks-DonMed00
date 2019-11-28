@@ -22,10 +22,10 @@ fun sendTasks(tasks: MutableLiveData<List<Task>>): Intent {
     var finalElement = ""
     tasks.value?.forEach {
         element += it.concept
-        if(it.completed){
-            element+=" Completado"
+        element += if(it.completed){
+            " Completado"
         }else{
-            element+=" Pendiente"
+            " Pendiente"
         }
         listToText.add(element)
         element=""
@@ -39,7 +39,7 @@ fun sendTasks(tasks: MutableLiveData<List<Task>>): Intent {
         putExtra(Intent.EXTRA_TEXT, finalElement)
         type = "text/plain"
     }
-    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
     return intent
 

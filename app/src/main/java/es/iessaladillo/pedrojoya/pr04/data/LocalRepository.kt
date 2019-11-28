@@ -25,7 +25,7 @@ object LocalRepository : Repository {
     }
 
     override fun queryCompletedTasks(): List<Task> {
-        var tasksCompleted: MutableList<Task> = mutableListOf()
+        val tasksCompleted: MutableList<Task> = mutableListOf()
         tasks.forEach {
             if (it.completed) {
                 tasksCompleted.add(it)
@@ -36,7 +36,7 @@ object LocalRepository : Repository {
 
 
     override fun queryPendingTasks(): List<Task> {
-        var tasksPending: MutableList<Task> = mutableListOf()
+        val tasksPending: MutableList<Task> = mutableListOf()
         tasks.forEach {
             if (!it.completed) {
                 tasksPending.add(it)
@@ -51,11 +51,10 @@ object LocalRepository : Repository {
         val formatTime: String = dateTime.format(
             DateTimeFormatter.ofPattern("M/d/y , HH:mm:ss")
         )
-        val id: Long
-        if (tasks.isEmpty()) {
-            id = 1
+        val id: Long = if (tasks.isEmpty()) {
+            1
         } else {
-            id = (tasks[tasks.size - 1].id) + 1
+            (tasks[tasks.size - 1].id) + 1
         }
         val task = Task(id, concept, "Created at: $formatTime", false, "No completed")
         tasks.add(task)

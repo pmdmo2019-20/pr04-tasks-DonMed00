@@ -8,9 +8,7 @@
         app:showAsAction="ifRoom|withText"
         app:iconTint="@color/colorWhite">
         <menu>
-            <group
-                android:id="@+id/mnuFilterFilter"
-                android:checkableBehavior="single">
+            <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/mnuFilterAll"
                     android:title="@string/tasks_mnuFilterAll"

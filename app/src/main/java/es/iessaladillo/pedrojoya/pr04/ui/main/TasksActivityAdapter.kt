@@ -1,20 +1,16 @@
 package es.iessaladillo.pedrojoya.pr04.ui.main
 
-import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.graphics.Paint
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import es.iessaladillo.pedrojoya.pr04.R
 import es.iessaladillo.pedrojoya.pr04.data.entity.Task
+import es.iessaladillo.pedrojoya.pr04.utils.strikeThrough
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.tasks_activity_item.*
-
 import kotlinx.android.synthetic.main.tasks_activity_item.view.*
 
 
@@ -28,7 +24,7 @@ import kotlinx.android.synthetic.main.tasks_activity_item.view.*
 //  o cuando fue completada si la tarea ya ha sido completada.
 //  Si la tarea está completada, el checkBox estará chequeado y el concepto estará tachado.
 
-class TasksActivityAdapter() : RecyclerView.Adapter<TasksActivityAdapter.ViewHolder>() {
+class TasksActivityAdapter : RecyclerView.Adapter<TasksActivityAdapter.ViewHolder>() {
 
     private var data: List<Task> = emptyList()
     var onItemClickListener: ((Int) -> Unit)? = null
@@ -86,13 +82,13 @@ class TasksActivityAdapter() : RecyclerView.Adapter<TasksActivityAdapter.ViewHol
                 containerView.lblConcept.text = concept
                 containerView.chkCompleted.isChecked = completed
                 if (!completed) {
-                    containerView.lblConcept.paintFlags = 0
+                    containerView.lblConcept.strikeThrough(false)
                     containerView.lblCompleted.text = createdAt
                     containerView.viewBar.run {
                         background = resources.getDrawable(R.color.colorPendingTask)
                     }
                 } else {
-                    containerView.lblConcept.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    containerView.lblConcept.strikeThrough(true)
                     containerView.viewBar.run {
                         background = resources.getDrawable(R.color.colorCompletedTask)
 

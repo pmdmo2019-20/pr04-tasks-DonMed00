@@ -83,12 +83,12 @@ class TasksActivity : AppCompatActivity() {
     private fun setupViews() {
         setupRecyclerView()
         txtConcept.setOnEditorActionListener { _, actionId, _ ->
-            OnEditorAction(actionId)
+            onEditorAction(actionId)
         }
         imgAddTask.setOnClickListener { addTask() }
     }
 
-    private fun OnEditorAction(actionId: Int): Boolean {
+    private fun onEditorAction(actionId: Int): Boolean {
         return if (actionId == EditorInfo.IME_ACTION_DONE) {
             addTask()
             true
@@ -108,7 +108,7 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun deleteTask(adapterPosition: Int) {
-        var task = listAdapter.getItem(adapterPosition)
+        val task = listAdapter.getItem(adapterPosition)
         viewModel.deleteTask(task)
         Snackbar.make(
             lstTasks,

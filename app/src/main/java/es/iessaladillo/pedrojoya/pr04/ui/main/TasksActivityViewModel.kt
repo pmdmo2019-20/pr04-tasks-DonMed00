@@ -53,24 +53,13 @@ class TasksActivityViewModel(
     val activityTitle: LiveData<String>
         get() = _activityTitle
 
-    private val _lblEmptyViewText: MutableLiveData<String> =
-        MutableLiveData(application.getString(R.string.tasks_no_tasks_yet))
-    val lblEmptyViewText: LiveData<String>
-        get() = _lblEmptyViewText
-
     // Eventos de comunicación con la actividad
 
     private val _onStartActivity: MutableLiveData<Event<Intent>> = MutableLiveData()
-    val onStartActivity: LiveData<Event<Intent>>
-        get() = _onStartActivity
 
     private val _onShowMessage: MutableLiveData<Event<String>> = MutableLiveData()
     val onShowMessage: LiveData<Event<String>>
         get() = _onShowMessage
-
-    private val _onShowTaskDeleted: MutableLiveData<Event<Task>> = MutableLiveData()
-    val onShowTaskDeleted: LiveData<Event<Task>>
-        get() = _onShowTaskDeleted
 
 
     // Hace que se muestre en el RecyclerView todas las tareas.

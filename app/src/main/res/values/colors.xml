@@ -7,5 +7,4 @@
     <color name="colorWhiteSemiTransparent">#AAFFFFFF</color>
     <color name="colorPendingTask">#B2DFDB</color>
     <color name="colorCompletedTask">#00796B</color>
-    <color name="colorllAddTaskPanel">#4DB6AC</color>
 </resources>
