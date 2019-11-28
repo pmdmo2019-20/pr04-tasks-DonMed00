@@ -55,8 +55,15 @@ class TasksActivity : AppCompatActivity() {
 
     private fun observeViewModelData() {
         observeTasks()
-        observeMessage()
         observeMenu()
+        observeEvent()
+    }
+
+    private fun observeEvent() {
+        viewModel.onShowMessage.observeEvent(this) {
+            Snackbar.make(lstTasks, it, Snackbar.LENGTH_SHORT).show()
+        }
+
     }
 
 
@@ -69,11 +76,7 @@ class TasksActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeMessage() {
-        viewModel.onShowMessage.observeEvent(this) {
-            Snackbar.make(lstTasks, it, Snackbar.LENGTH_SHORT).show()
-        }
-    }
+
 
 
     @RequiresApi(Build.VERSION_CODES.O)

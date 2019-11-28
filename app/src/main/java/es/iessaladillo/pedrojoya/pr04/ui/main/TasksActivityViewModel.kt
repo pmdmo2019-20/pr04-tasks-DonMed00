@@ -9,6 +9,8 @@ import es.iessaladillo.pedrojoya.pr04.R
 import es.iessaladillo.pedrojoya.pr04.base.Event
 import es.iessaladillo.pedrojoya.pr04.data.Repository
 import es.iessaladillo.pedrojoya.pr04.data.entity.Task
+import es.iessaladillo.pedrojoya.pr04.utils.isActivityAvailable
+import es.iessaladillo.pedrojoya.pr04.utils.sendTasks
 
 class TasksActivityViewModel(
     private val repository: Repository,
@@ -22,7 +24,7 @@ class TasksActivityViewModel(
         get() = _tasks
 
 
-    val taskIdList: MutableList<Long> = mutableListOf()
+    private val taskIdList: MutableList<Long> = mutableListOf()
 
     init {
         refreshLists(repository.queryAllTasks())
@@ -31,6 +33,7 @@ class TasksActivityViewModel(
 
     private fun refreshLists(newList: List<Task>) {
         _tasks.value = newList.sortedByDescending { it.id }
+        taskIdList.clear()
         tasks.value?.forEach {
             taskIdList.add(it.id)
         }
@@ -72,7 +75,7 @@ class TasksActivityViewModel(
 
     // Hace que se muestre en el RecyclerView todas las tareas.
     fun filterAll() {
-        _currentFilterMenuItemId.value =R.id.mnuFilterAll
+        _currentFilterMenuItemId.value = R.id.mnuFilterAll
         _activityTitle.value = application.getString(R.string.tasks_title_all)
         queryTasks(TasksActivityFilter.ALL)
 
@@ -80,7 +83,7 @@ class TasksActivityViewModel(
 
     // Hace que se muestre en el RecyclerView sólo las tareas completadas.
     fun filterCompleted() {
-        _currentFilterMenuItemId.value =R.id.mnuFilterCompleted
+        _currentFilterMenuItemId.value = R.id.mnuFilterCompleted
         _activityTitle.value = application.getString(R.string.tasks_title_completed)
         queryTasks(TasksActivityFilter.COMPLETED)
 
@@ -89,7 +92,7 @@ class TasksActivityViewModel(
 
     // Hace que se muestre en el RecyclerView sólo las tareas pendientes.
     fun filterPending() {
-        _currentFilterMenuItemId.value =R.id.mnuFilterPending
+        _currentFilterMenuItemId.value = R.id.mnuFilterPending
         _activityTitle.value = application.getString(R.string.tasks_title_pending)
         queryTasks(TasksActivityFilter.PENDING)
 
@@ -118,10 +121,10 @@ class TasksActivityViewModel(
 
     // Hecho
     fun deleteTasks() {
-        if(_tasks.value?.isNotEmpty()==true){
+        if (_tasks.value?.isNotEmpty() == true) {
             repository.deleteTasks(taskIdList)
-        }else{
-            _onShowMessage.value =Event(application.getString(R.string.tasks_no_tasks_to_delete))
+        } else {
+            _onShowMessage.value = Event(application.getString(R.string.tasks_no_tasks_to_delete))
         }
         queryTasks(_currentFilter.value!!)
 
@@ -130,10 +133,11 @@ class TasksActivityViewModel(
 
     // Hecho
     fun markTasksAsCompleted() {
-        if(_tasks.value?.isNotEmpty()==true){
+        if (_tasks.value?.isNotEmpty() == true) {
             repository.markTasksAsCompleted(taskIdList)
-        }else{
-            _onShowMessage.value =Event(application.getString(R.string.tasks_no_tasks_to_mark_as_completed))
+        } else {
+            _onShowMessage.value =
+                Event(application.getString(R.string.tasks_no_tasks_to_mark_as_completed))
         }
         queryTasks(_currentFilter.value!!)
 
@@ -141,21 +145,28 @@ class TasksActivityViewModel(
 
     // Hecho
     fun markTasksAsPending() {
-        if(_tasks.value?.isNotEmpty()==true){
+        if (_tasks.value?.isNotEmpty() == true) {
             repository.markTasksAsPending(taskIdList)
-        }else{
-            _onShowMessage.value =Event(application.getString(R.string.tasks_no_tasks_to_mark_as_pending))
+        } else {
+            _onShowMessage.value =
+                Event(application.getString(R.string.tasks_no_tasks_to_mark_as_pending))
         }
         queryTasks(_currentFilter.value!!)
 
     }
 
-    // Hace que se envíe un Intent con la lista de tareas mostradas actualmente
-    // en el RecyclerView.
-    // Si no se estaba mostrando ninguna tarea, se muestra un Snackbar indicando
-    // que no hay tareas que compartir.
+    // Hecho
     fun shareTasks() {
-        //TODO
+        if (_tasks.value?.isNotEmpty() == true) {
+            val intent = sendTasks(_tasks)
+            _onStartActivity.value = Event(intent)
+
+            if (isActivityAvailable(application, intent)) {
+                application.startActivity(intent)
+            }
+        } else {
+            _onShowMessage.value = Event(application.getString(R.string.tasks_no_tasks_to_share))
+        }
     }
 
     //Hecho
@@ -184,7 +195,7 @@ class TasksActivityViewModel(
             TasksActivityFilter.PENDING ->
                 refreshLists(repository.queryPendingTasks())
         }
-        _currentFilter.value=filter
+        _currentFilter.value = filter
     }
 
 
