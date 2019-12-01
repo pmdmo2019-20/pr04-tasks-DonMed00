@@ -1,23 +1,18 @@
 package es.iessaladillo.pedrojoya.pr04.data
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
 import es.iessaladillo.pedrojoya.pr04.data.entity.Task
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
-
-// TODO: Crea una clase llamada LocalRepository que implemente la interfaz Repository
-//  usando una lista mutable para almacenar las tareas.
-//  Los id de las tareas se irán generando secuencialmente a partir del valor 1 conforme
-//  se van agregando tareas (add).
 
 object LocalRepository : Repository {
     private var tasks: MutableList<Task> = mutableListOf()
 
-
-    //private val tasksLiveData: MutableLiveData<List<Task>> = MutableLiveData(tasks)
-
+    @SuppressLint("SimpleDateFormat")
+    private val sdf: DateFormat = SimpleDateFormat("HH:mm:ss")
+    private var date = Date()
 
     override fun queryAllTasks(): List<Task> {
         return tasks
@@ -45,20 +40,15 @@ object LocalRepository : Repository {
         return tasksPending.toList()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun addTask(concept: String) {
-        val dateTime = LocalDateTime.now()
-        val formatTime: String = dateTime.format(
-            DateTimeFormatter.ofPattern("M/d/y , HH:mm:ss")
-        )
+        date = Date()
         val id: Long = if (tasks.isEmpty()) {
             1
         } else {
             (tasks[tasks.size - 1].id) + 1
         }
-        val task = Task(id, concept, "Created at: $formatTime", false, "No completed")
+        val task = Task(id, concept, "Created at: ${sdf.format(date)}", false, "No completed")
         tasks.add(task)
-        //tasksLiveData.value = ArrayList<Task>(tasks)
     }
 
     override fun insertTask(task: Task) {
@@ -85,21 +75,16 @@ object LocalRepository : Repository {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun markTaskAsCompleted(taskId: Long) {
-        val dateTime = LocalDateTime.now()
-        val formatTime: String = dateTime.format(
-            DateTimeFormatter.ofPattern("M/d/y , H:m:ss")
-        )
+        date = Date()
         tasks.forEach {
             if (it.id == taskId) {
                 it.completed = true
-                it.completedAt = "Completed at: $formatTime"
+                it.completedAt = "Completed at: ${sdf.format(date)}"
             }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun markTasksAsCompleted(taskIdList: List<Long>) {
         tasks.forEach {
             if (taskIdList.contains(it.id)) {
@@ -125,4 +110,3 @@ object LocalRepository : Repository {
     }
 
 }
-
